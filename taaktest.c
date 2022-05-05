@@ -6,7 +6,13 @@
 
 int main(int argc, char const *argv[])
 {
-    FILE * inputBMP = fopen(BMPINPUT, "rb");
+    // file path
+    char filepath[100];
+    printf("Filepath : ");
+    scanf("%s",filepath);
+
+    //opening file
+    FILE * inputBMP = fopen(filepath, "rb");
     unsigned char header[54] = {0};
     signed int hoogte = 0;
     signed int breedte = 0;
@@ -20,6 +26,7 @@ int main(int argc, char const *argv[])
         return -1;
     }
 
+    //reading header info
     fread(header, 1, 54, inputBMP);
 
     breedte = header[21] << 24 | header[20] << 16 | header[19] << 8 | header[18]; 
@@ -40,14 +47,15 @@ int main(int argc, char const *argv[])
 
     
     fclose(inputBMP);
-    printf("INFO: File %s CLOSED\n", BMPINPUT);
+    printf("INFO: File %s CLOSED\n", filepath);
 
     //----------------------------------------
     for (int y = 1; y < hoogte-1; y++)
     {
-        for (int x = 1; x < hoogte -1; x++)
+        for (int x = 1; x < breedte -1; x++)
         {
-            int startloc = (x + (y*breedte))*3 ;
+            int startloc = (x + (y*breedte));
+            startloc = startloc *3;
             float rbuffer = 0;
             float gbuffer = 0;
             float bbuffer = 0;
@@ -65,27 +73,21 @@ int main(int argc, char const *argv[])
                     bbuffer = bbuffer + (temp3 / 9);
                 }
             }
-            float rs = pixels[startloc+2];
-            float gs = pixels[startloc+1];
-            float bs = pixels[startloc];
-            printf("pixels : %i, r: %f g : %f b : %f\n",startloc,rs,gs,bs);
             pixels[startloc+2] = rbuffer;
             pixels[startloc+1] = gbuffer;
             pixels[startloc] = bbuffer;
         }  
     }
-    printf("output:\n");
-    for (int y = 1; y < hoogte-1; y++)
+    FILE *fpw = fopen("new.bmp","w");
+    if (fpw == NULL)
     {
-        for (int x = 1; x < hoogte -1; x++)
-        {
-            int cord = (x + (y*breedte))*3 ;
-            float r = pixels[cord+2];
-            float g = pixels[cord+1];
-            float b = pixels[cord];
-            printf("pixels : %i, r: %f g : %f b : %f\n",cord,r,g,b);
-        }  
-    } 
+        printf("can't create file");
+    }
+    
+    fwrite(header,sizeof (header),1,fpw);
+    fwrite(pixels,(totaalAantalPixels)*3,1,fpw);
+    fclose(fpw);
+    
     //----------------------------------------
     free(pixels);
     printf("INFO: Heap memory Freed = %d (bytes)\n", totaalAantalPixels*3);
