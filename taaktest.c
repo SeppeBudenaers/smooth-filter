@@ -54,7 +54,7 @@ int main(int argc, char const *argv[])
     {
         for (int x = 1; x < breedte -1; x++)
         {
-            int startloc = (x + (y*breedte));
+            long startloc = (x + (y*breedte)); // wat als dit over een int (255) gaat 
             startloc = startloc *3;
             float rbuffer = 0;
             float gbuffer = 0;
@@ -64,7 +64,7 @@ int main(int argc, char const *argv[])
                
                 for (int smoothx = -1; smoothx < 2; smoothx++)
                 {
-                    int loc = startloc + ((smoothx + (smoothy*breedte))*3); // goed gekeurt rare typecast probleemen
+                    long loc = startloc + ((smoothx + (smoothy*breedte))*3); // goed gekeurt rare typecast probleemen
                     float temp1 = (pixels[loc+2]);
                     float temp2 = (pixels[loc+1]);
                     float temp3 = (pixels[loc]);
@@ -78,12 +78,13 @@ int main(int argc, char const *argv[])
             pixels[startloc] = bbuffer;
         }  
     }
-    FILE *fpw = fopen("new.bmp","w");
+    printf("Filename : ");
+    scanf("%s",filepath);
+    FILE *fpw = fopen(filepath,"w");
     if (fpw == NULL)
     {
         printf("can't create file");
     }
-    
     fwrite(header,sizeof (header),1,fpw);
     fwrite(pixels,(totaalAantalPixels)*3,1,fpw);
     fclose(fpw);
