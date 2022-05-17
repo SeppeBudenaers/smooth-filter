@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-int read( unsigned char* header,signed int hoogte, signed int breedte, unsigned char * pixels, int totaalAantalPixels,char * filepath, FILE * inputBMP);
+
 void smooth(unsigned char * pixels, signed int hoogte, signed int breedte);
 void cleanup(unsigned char * pixels, unsigned char * header,int totaalAantalPixels);
 
@@ -27,17 +27,7 @@ int main(int argc, char const *argv[])
     }
 
     //reading header info
-
-
-    //----------------------------------------
-    smooth(pixels,hoogte,breedte);
-    cleanup(pixels, header ,totaalAantalPixels);
-    //-----------------------------------------
-}
-int read( unsigned char* header,signed int hoogte, signed int breedte, unsigned char * pixels, int totaalAantalPixels,char * filepath, FILE * inputBMP)
-{
     fread(header, 1, 54, inputBMP);
-
     breedte = header[21] << 24 | header[20] << 16 | header[19] << 8 | header[18]; 
     printf("De breedte van mijn afbeelding is = %d\n", breedte);
     hoogte = header[25] << 24 | header[24] << 16 | header[23] << 8 | header[22]; 
@@ -57,7 +47,13 @@ int read( unsigned char* header,signed int hoogte, signed int breedte, unsigned 
     
     fclose(inputBMP);
     printf("INFO: File %s CLOSED\n", filepath);
+
+    //----------------------------------------
+    smooth(pixels,hoogte,breedte);
+    cleanup(pixels, header ,totaalAantalPixels);
+    //----------------------------------------
 }
+
 void smooth(unsigned char * pixels, signed int hoogte, signed int breedte)
 {
     for (int y = 1; y < hoogte-1; y++)
@@ -99,7 +95,7 @@ void cleanup(unsigned char * pixels, unsigned char * header,int totaalAantalPixe
     {
         printf("can't create file");
     }
-    fwrite(header,sizeof (header),1,fpw);
+    fwrite(header,54,1,fpw);
     fwrite(pixels,(totaalAantalPixels)*3,1,fpw);
     fclose(fpw);
     free(pixels);
