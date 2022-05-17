@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-
+int read( unsigned char* header,signed int hoogte, signed int breedte, unsigned char * pixels, int totaalAantalPixels,char * filepath, FILE * inputBMP);
 void smooth(unsigned char * pixels, signed int hoogte, signed int breedte);
 void cleanup(unsigned char * pixels, unsigned char * header,int totaalAantalPixels);
 
@@ -27,6 +27,15 @@ int main(int argc, char const *argv[])
     }
 
     //reading header info
+
+
+    //----------------------------------------
+    smooth(pixels,hoogte,breedte);
+    cleanup(pixels, header ,totaalAantalPixels);
+    //-----------------------------------------
+}
+int read( unsigned char* header,signed int hoogte, signed int breedte, unsigned char * pixels, int totaalAantalPixels,char * filepath, FILE * inputBMP)
+{
     fread(header, 1, 54, inputBMP);
 
     breedte = header[21] << 24 | header[20] << 16 | header[19] << 8 | header[18]; 
@@ -48,12 +57,7 @@ int main(int argc, char const *argv[])
     
     fclose(inputBMP);
     printf("INFO: File %s CLOSED\n", filepath);
-
-    //----------------------------------------
-    smooth(pixels,hoogte,breedte);
-    cleanup(pixels, header ,totaalAantalPixels);
 }
-
 void smooth(unsigned char * pixels, signed int hoogte, signed int breedte)
 {
     for (int y = 1; y < hoogte-1; y++)
