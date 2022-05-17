@@ -2,11 +2,17 @@
 #include <stdlib.h>
 
 #define BMPINPUT "test_bmp.bmp"
-
+void smooth(unsigned char * pixels, signed int hoogte, signed int breedte);
 
 int main(int argc, char const *argv[])
 {
-    FILE * inputBMP = fopen(BMPINPUT, "rb");
+    // file path
+    char filepath[100];
+    printf("Filepath : ");
+    scanf("%s",filepath);
+
+    //opening file
+    FILE * inputBMP = fopen(filepath, "rb");
     unsigned char header[54] = {0};
     signed int hoogte = 0;
     signed int breedte = 0;
@@ -20,6 +26,7 @@ int main(int argc, char const *argv[])
         return -1;
     }
 
+    //reading header info
     fread(header, 1, 54, inputBMP);
 
     breedte = header[21] << 24 | header[20] << 16 | header[19] << 8 | header[18]; 
@@ -40,23 +47,44 @@ int main(int argc, char const *argv[])
 
     
     fclose(inputBMP);
-    printf("INFO: File %s CLOSED\n", BMPINPUT);
+    printf("INFO: File %s CLOSED\n", filepath);
 
     //----------------------------------------
+    smooth(pixels,hoogte,breedte);
+    printf("Filename : ");
+    scanf("%s",filepath);
+    FILE *fpw = fopen(filepath,"wb");
+    if (fpw == NULL)
+    {
+        printf("can't create file");
+    }
+    fwrite(header,sizeof (header),1,fpw);
+    fwrite(pixels,(totaalAantalPixels)*3,1,fpw);
+    fclose(fpw);
+    
+    //----------------------------------------
+    free(pixels);
+    printf("INFO: Heap memory Freed = %d (bytes)\n", totaalAantalPixels*3);
+    return 0;
+}
+
+void smooth(unsigned char * pixels, signed int hoogte, signed int breedte)
+{
     for (int y = 1; y < hoogte-1; y++)
     {
-        for (int x = 1; x < hoogte -1; x++)
+        for (int x = 1; x < breedte -1; x++)
         {
-            int startloc = (x + (y*breedte))*3 ;
-            float rbuffer = 0;
-            float gbuffer = 0;
-            float bbuffer = 0;
+            long startloc = (x + (y*breedte)); // wat als dit over een int (255) gaat 
+            startloc = startloc *3;
+            unsigned char rbuffer = 0;
+            unsigned char gbuffer = 0;
+            unsigned char bbuffer = 0;
             for (int smoothy = -1; smoothy < 2; smoothy++)
             {
                
                 for (int smoothx = -1; smoothx < 2; smoothx++)
                 {
-                    int loc = startloc + ((smoothx + (smoothy*breedte))*3); // goed gekeurt rare typecast probleemen
+                    long loc = startloc + ((smoothx + (smoothy*breedte))*3); // goed gekeurt rare typecast probleemen
                     float temp1 = (pixels[loc+2]);
                     float temp2 = (pixels[loc+1]);
                     float temp3 = (pixels[loc]);
@@ -65,29 +93,9 @@ int main(int argc, char const *argv[])
                     bbuffer = bbuffer + (temp3 / 9);
                 }
             }
-            float rs = pixels[startloc+2];
-            float gs = pixels[startloc+1];
-            float bs = pixels[startloc];
-            printf("pixels : %i, r: %f g : %f b : %f\n",startloc,rs,gs,bs);
             pixels[startloc+2] = rbuffer;
             pixels[startloc+1] = gbuffer;
             pixels[startloc] = bbuffer;
         }  
     }
-    printf("output:\n");
-    for (int y = 1; y < hoogte-1; y++)
-    {
-        for (int x = 1; x < hoogte -1; x++)
-        {
-            int cord = (x + (y*breedte))*3 ;
-            float r = pixels[cord+2];
-            float g = pixels[cord+1];
-            float b = pixels[cord];
-            printf("pixels : %i, r: %f g : %f b : %f\n",cord,r,g,b);
-        }  
-    } 
-    //----------------------------------------
-    free(pixels);
-    printf("INFO: Heap memory Freed = %d (bytes)\n", totaalAantalPixels*3);
-    return 0;
 }
