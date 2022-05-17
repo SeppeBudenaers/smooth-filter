@@ -49,9 +49,27 @@ int main(int argc, char const *argv[])
     printf("INFO: File %s CLOSED\n", filepath);
 
     //----------------------------------------
-    smooth(pixels,hoogte,breedte);
-    cleanup(pixels, header ,totaalAantalPixels);
-    //----------------------------------------
+    char filter;
+    printf("welke filter will je toepassen : ");
+    scanf("%c",&filter);
+    scanf("%c",&filter);
+    switch (filter)
+    {
+    case 'e' :
+        smooth(pixels,hoogte,breedte);
+        break;
+    case 'z':
+        //zwartwit functie
+        break;
+    case 's':
+        //sharpning functie
+        break;
+    default:
+        printf("no filter aplied");
+        break;
+    }
+    cleanup(pixels,header,totaalAantalPixels);
+    //-----------------------------------------
 }
 
 void smooth(unsigned char * pixels, signed int hoogte, signed int breedte)
@@ -60,7 +78,7 @@ void smooth(unsigned char * pixels, signed int hoogte, signed int breedte)
     {
         for (int x = 1; x < breedte -1; x++)
         {
-            long startloc = (x + (y*breedte)); // wat als dit over een int (255) gaat 
+            long startloc = (x + (y*breedte));
             startloc = startloc *3;
             unsigned char rbuffer = 0;
             unsigned char gbuffer = 0;
@@ -85,6 +103,10 @@ void smooth(unsigned char * pixels, signed int hoogte, signed int breedte)
         }  
     }
 }
+// zwartwit{}
+
+//sharping {}
+
 void cleanup(unsigned char * pixels, unsigned char * header,int totaalAantalPixels)
 {
     char filepath[100];
