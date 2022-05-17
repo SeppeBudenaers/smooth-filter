@@ -2,7 +2,7 @@
 #include <stdlib.h>
 
 #define BMPINPUT "test_bmp.bmp"
-
+void smooth(unsigned char * pixels, signed int hoogte, signed int breedte);
 
 int main(int argc, char const *argv[])
 {
@@ -50,15 +50,35 @@ int main(int argc, char const *argv[])
     printf("INFO: File %s CLOSED\n", filepath);
 
     //----------------------------------------
+    smooth(pixels,hoogte,breedte);
+    printf("Filename : ");
+    scanf("%s",filepath);
+    FILE *fpw = fopen(filepath,"wb");
+    if (fpw == NULL)
+    {
+        printf("can't create file");
+    }
+    fwrite(header,sizeof (header),1,fpw);
+    fwrite(pixels,(totaalAantalPixels)*3,1,fpw);
+    fclose(fpw);
+    
+    //----------------------------------------
+    free(pixels);
+    printf("INFO: Heap memory Freed = %d (bytes)\n", totaalAantalPixels*3);
+    return 0;
+}
+
+void smooth(unsigned char * pixels, signed int hoogte, signed int breedte)
+{
     for (int y = 1; y < hoogte-1; y++)
     {
         for (int x = 1; x < breedte -1; x++)
         {
             long startloc = (x + (y*breedte)); // wat als dit over een int (255) gaat 
             startloc = startloc *3;
-            float rbuffer = 0;
-            float gbuffer = 0;
-            float bbuffer = 0;
+            unsigned char rbuffer = 0;
+            unsigned char gbuffer = 0;
+            unsigned char bbuffer = 0;
             for (int smoothy = -1; smoothy < 2; smoothy++)
             {
                
@@ -78,19 +98,4 @@ int main(int argc, char const *argv[])
             pixels[startloc] = bbuffer;
         }  
     }
-    printf("Filename : ");
-    scanf("%s",filepath);
-    FILE *fpw = fopen(filepath,"w");
-    if (fpw == NULL)
-    {
-        printf("can't create file");
-    }
-    fwrite(header,sizeof (header),1,fpw);
-    fwrite(pixels,(totaalAantalPixels)*3,1,fpw);
-    fclose(fpw);
-    
-    //----------------------------------------
-    free(pixels);
-    printf("INFO: Heap memory Freed = %d (bytes)\n", totaalAantalPixels*3);
-    return 0;
 }
