@@ -3,7 +3,6 @@
 
 void smooth(unsigned char * pixels, signed int hoogte, signed int breedte);
 void zwartwit(unsigned char * pixels, signed int hoogte, signed int breedte);
-void sharping(unsigned char * pixels, signed int hoogte, signed int breedte);
 void cleanup(unsigned char * pixels, unsigned char * header,int totaalAantalPixels);
 
 int main(int argc, char const *argv[])
@@ -12,7 +11,7 @@ int main(int argc, char const *argv[])
     char filepath[100];
     printf("Filepath : ");
     scanf("%s",filepath);
-
+    sprintf(filepath,"%s.bmp",filepath);
     //opening file
     FILE * inputBMP = fopen(filepath, "rb");
     unsigned char header[54] = {0};
@@ -51,24 +50,39 @@ int main(int argc, char const *argv[])
     printf("INFO: File %s CLOSED\n", filepath);
 
     //----------------------------------------
-    char filter;
-    printf("s voor smoothing en g voor grayscaling \n");
-    printf("Welke filter will je toepassen : ");
-    scanf("%c",&filter);
-    scanf("%c",&filter);
-    switch (filter)
-    {
-    case 's' :
-        smooth(pixels,hoogte,breedte);
-        break;
-    case 'g':
-        zwartwit(pixels,hoogte,breedte);
-        break;
-    default:
-        printf("no filter aplied");
-        break;
-    }
-    cleanup(pixels,header,totaalAantalPixels);
+   int busy = 0;
+   system("cls");
+   while (busy == 0)
+   {
+        char filter;
+        printf("s : 3x3 Smooth filter\n\rg : Grayscale\n\rother char : Save file and exit program\n");
+        printf("Welke filter will je toepassen : ");
+        scanf("%c",&filter);
+        scanf("%c",&filter);
+        switch (filter)
+        {
+        case 's' :
+            printf("Applying 3x3 smooth filter...\n");
+            smooth(pixels,hoogte,breedte);
+            system("cls");
+            printf("Last filter applied: 3x3 smooth filter\n");
+            break;
+        case 'g':
+            printf("Applying grayscale...\n");
+            zwartwit(pixels,hoogte,breedte);
+            system("cls");
+            printf("Last filter applied: grayscale\n");
+            break;
+        default:
+            printf("Exiting program...\n");
+            busy = 1;
+            system("cls");
+            printf("Saving file and shutting down program\n");
+            break;
+        }
+   }
+   cleanup(pixels,header,totaalAantalPixels);
+
     //-----------------------------------------
 }
 
@@ -123,8 +137,9 @@ void zwartwit(unsigned char * pixels, signed int hoogte, signed int breedte){
 void cleanup(unsigned char * pixels, unsigned char * header,int totaalAantalPixels)
 {
     char filepath[100];
-    printf("Filename : ");
+    printf("File path and file name : ");
     scanf("%s",filepath);
+    sprintf(filepath,"%s.bmp",filepath);
     FILE *fpw = fopen(filepath,"wb");
     if (fpw == NULL)
     {

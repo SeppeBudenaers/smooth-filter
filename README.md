@@ -7,9 +7,7 @@ het werkt vervolgens:
 
 geef u relatief pad tot u file die je wilt processen.
 selecteer de filter.
-geef het relatief pad en naam van de file  voor het op te slaan. 
-
-(vergeet niet .bmp achter u file name te zetten)
+geef het relatief pad en naam van de file  voor het op te slaan.  (format moet niet gespecifierd worden)
 
 ###########################################################################################
 **features:**
