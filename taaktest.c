@@ -2,6 +2,8 @@
 #include <stdlib.h>
 
 void smooth(unsigned char * pixels, signed int hoogte, signed int breedte);
+void zwartwit(unsigned char * pixels, signed int hoogte, signed int breedte);
+void sharping(unsigned char * pixels, signed int hoogte, signed int breedte);
 void cleanup(unsigned char * pixels, unsigned char * header,int totaalAantalPixels);
 
 int main(int argc, char const *argv[])
@@ -28,9 +30,9 @@ int main(int argc, char const *argv[])
 
     //reading header info
     fread(header, 1, 54, inputBMP);
-    breedte = header[21] << 24 | header[20] << 16 | header[19] << 8 | header[18]; 
+    breedte = header[21] << 24 | header[20] << 16 | header[19] << 8 | header[18];
     printf("De breedte van mijn afbeelding is = %d\n", breedte);
-    hoogte = header[25] << 24 | header[24] << 16 | header[23] << 8 | header[22]; 
+    hoogte = header[25] << 24 | header[24] << 16 | header[23] << 8 | header[22];
     printf("De hoogte van mijn afbeelding is = %d\n", hoogte);
 
     totaalAantalPixels = breedte * hoogte;
@@ -44,25 +46,23 @@ int main(int argc, char const *argv[])
     fread(pixels, 1, totaalAantalPixels*3, inputBMP);
     printf("INFO: Heap memory allocated = %d (bytes)\n", totaalAantalPixels*3);
 
-    
+
     fclose(inputBMP);
     printf("INFO: File %s CLOSED\n", filepath);
 
     //----------------------------------------
     char filter;
-    printf("welke filter will je toepassen : ");
+    printf("s voor smoothing en g voor grayscaling \n");
+    printf("Welke filter will je toepassen : ");
     scanf("%c",&filter);
     scanf("%c",&filter);
     switch (filter)
     {
-    case 'e' :
+    case 's' :
         smooth(pixels,hoogte,breedte);
         break;
-    case 'z':
-        //zwartwit functie
-        break;
-    case 's':
-        //sharpning functie
+    case 'g':
+        zwartwit(pixels,hoogte,breedte);
         break;
     default:
         printf("no filter aplied");
@@ -85,7 +85,7 @@ void smooth(unsigned char * pixels, signed int hoogte, signed int breedte)
             unsigned char bbuffer = 0;
             for (int smoothy = -1; smoothy < 2; smoothy++)
             {
-               
+
                 for (int smoothx = -1; smoothx < 2; smoothx++)
                 {
                     long loc = startloc + ((smoothx + (smoothy*breedte))*3); // goed gekeurt rare typecast probleemen
@@ -100,12 +100,25 @@ void smooth(unsigned char * pixels, signed int hoogte, signed int breedte)
             pixels[startloc+2] = rbuffer;
             pixels[startloc+1] = gbuffer;
             pixels[startloc] = bbuffer;
-        }  
+        }
     }
 }
-// zwartwit{}
+void zwartwit(unsigned char * pixels, signed int hoogte, signed int breedte){
 
-//sharping {}
+  for (int y = 0; y < hoogte; ++y)
+  {
+      for (int x = 0; x < breedte; ++x)
+      {
+        long startloc = (x + (y*breedte));
+        startloc *= 3;
+        unsigned char gray = pixels[startloc] * 0.3 + pixels[startloc+1] * 0.58 + pixels[startloc+2] * 0.11;
+        //printf("test");
+        pixels[startloc+2] = gray;
+        pixels[startloc+1] = gray;
+        pixels[startloc] = gray;
+      }
+  }
+}
 
 void cleanup(unsigned char * pixels, unsigned char * header,int totaalAantalPixels)
 {
