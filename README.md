@@ -1,5 +1,5 @@
 # smooth filter
-###########################################################################################
+#######################################################################################
 
 3x3 smooth filter en grijsschaal programma voor een  24bit bmps zonder zero padding
 
@@ -9,7 +9,7 @@ geef u relatief pad tot u file die je wilt processen.
 selecteer de filter.
 geef het relatief pad en naam van de file  voor het op te slaan.  (format moet niet gespecifierd worden)
 
-###########################################################################################
+#######################################################################################
 **features:**
 
 3x3 smooth filter 
