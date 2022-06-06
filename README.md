@@ -10,6 +10,7 @@ selecteer de filter.
 geef het relatief pad en naam van de file  voor het op te slaan.  (format moet niet gespecifierd worden)
 
 #######################################################################################
+
 **features:**
 
 3x3 smooth filter 
